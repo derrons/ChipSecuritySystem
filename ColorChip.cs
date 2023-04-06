@@ -2,8 +2,8 @@
 {
     public class ColorChip
     {
-        public Color StartColor { get; private set; }
-        public Color EndColor { get; private set; }
+        public Color StartColor { get; set; }
+        public Color EndColor { get; set; }
 
         public ColorChip(Color startColor, Color endColor)
         {
