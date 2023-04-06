@@ -9,110 +9,80 @@ using System.Xml.Schema;
 
 namespace ChipSecuritySystem
 {
-    public  class Program
+    public class Program
     {
-        static Color [,] CorrectAccessArray = new Color [4, 2];
-        public static ColorChip family;
- 
-        public static Array SequenceAccess(ColorChip colors)
+        static List<ColorChip> colorChips = new List<ColorChip>() {
+            new ColorChip(Color.Blue, Color.Yellow),
+            new ColorChip(Color.Red, Color.Green),
+            new ColorChip(Color.Yellow, Color.Red),
+            new ColorChip(Color.Orange, Color.Purple),
+        };
+
+        static void GetCombinations(List<ColorChip> chipList, List<ColorChip> tempChipList, int startIndex,
+            int endIndex, int currentIndex, int sequenceLength, ref List<List<ColorChip>> outPut)
         {
-            //Logic Statement in this method
-            if (colors.StartColor == Color.Blue)
-            {
-                CorrectAccessArray[0, 0] = colors.StartColor;
-                CorrectAccessArray[0, 1] = colors.EndColor;
-            }
-            else if (colors.EndColor == Color.Green)
-            {
-                CorrectAccessArray[3, 0] = colors.StartColor;
-                CorrectAccessArray[3, 1] = colors.EndColor;
-            }
-            else if (CorrectAccessArray[0, 0] != 0 && CorrectAccessArray[3, 1] != 0)
-            {
-                return CorrectAccessArray;
-            }
-            else if (CorrectAccessArray[1, 0] != 0)
-            {
-                CorrectAccessArray[1, 0] = colors.StartColor;
-                CorrectAccessArray[1, 1] = colors.EndColor;
-            }
-            else 
-            {
-                CorrectAccessArray[2, 0] = colors.StartColor;
-                CorrectAccessArray[2, 1] = colors.EndColor;
-                return CorrectAccessArray; 
-            }
 
 
-            CorrectAccessArray[0, 0] = colors.StartColor;
-            CorrectAccessArray[3, 1] = colors.EndColor;
-            
-                
-            return CorrectAccessArray;
-         }
+            if (currentIndex == sequenceLength)
+            {
+                outPut.Add(tempChipList);
+                return;
+            }
 
+            for (int i = startIndex; i < endIndex && (endIndex - i + 1) >= currentIndex; i++)
+            {
+                tempChipList.Add(chipList[i]);
+                GetCombinations(chipList, tempChipList, i + 1, endIndex, currentIndex + 1, sequenceLength, ref outPut);
+            }
+
+        }
 
         static void Main(string[] args)
         {
+            int start, end;
+            var chips = new List<ColorChip>();
 
-            for (int i = 0; i < 4; i++)
+
+            // find start and end chips
+            for (int i = 0; i < colorChips.Count; i++)
             {
-                if (i != 4)
+                if (colorChips[i].StartColor == Color.Blue)
                 {
-
-
-                    Console.WriteLine("Please enter your chip colors");
-                    string sequenceOne = Console.ReadLine().ToLower();
-                    string sequenceTwo = Console.ReadLine().ToLower();
-
-                    if (sequenceOne == "red")
-                    {
-                        family.StartColor = Color.Red;
-                    }
-                    else if (sequenceOne == "green")
-                    {
-                        family.StartColor = Color.Green;
-                    }
-                    else if (sequenceOne == "blue")
-                    {
-                        family.StartColor = Color.Blue;
-                    }
-                    else if (sequenceOne == "yellow")
-                    {
-                        family.StartColor = Color.Yellow;
-                    }
-                    else if (sequenceOne == "purple")
-                    {
-                        family.StartColor = Color.Purple;
-                    }
-                    else family.StartColor = Color.Orange;
-
-                    if (sequenceTwo == "red")
-                    {
-                        family.EndColor = Color.Red;
-                    }
-                    else if (sequenceTwo == "green")
-                    {
-                        family.EndColor = Color.Green;
-                    }
-                    else if (sequenceTwo == "blue")
-                    {
-                        family.EndColor = Color.Blue;
-                    }
-                    else if (sequenceTwo == "yellow")
-                    {
-                        family.EndColor = Color.Yellow;
-                    }
-                    else if (sequenceTwo == "purple")
-                    {
-                        family.EndColor = Color.Purple;
-                    }
-                    else family.EndColor = Color.Orange;
+                    start = i;
                 }
 
+                else if (colorChips[i].EndColor == Color.Green)
+                {
+                    end = i;
+                }
+
+                else
+                {
+                    chips.Add(colorChips[i]);
+                }
             }
-            Console.WriteLine(SequenceAccess(family));
+
+            int powerSetCount = 1 << chips.Count;
+
+
+            int itemLength = chips.Count;
+            var chipCombinations = new List<List<ColorChip>>();
+            while (chips.Count > 0)
+            {
+
+                GetCombinations(chips, new List<ColorChip>(), 0, chips.Count - 1, 0, itemLength, ref chipCombinations);
+
+                itemLength--;
+            }
+
+
+
+            Console.WriteLine(chipCombinations.Count);
+
+
 
         }
+
+
     }
 }
